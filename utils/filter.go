@@ -1,6 +1,11 @@
 package utils
 
-import "strings"
+import (
+	"log"
+	"strings"
+
+	"github.com/kljensen/snowball"
+)
 
 func lowercaseFilter(tokens []string) []string {
 	r := make([]string, len(tokens))
@@ -24,4 +29,17 @@ func stopWordsFilter(tokens []string) []string {
 		}
 	}
 	return r
+}
+
+func stemFilter(tokens []string) []string {
+    r := make([]string, len(tokens))
+    for i, word := range tokens {
+        stemWord, err := snowball.Stem(word, "english", true)
+        if err != nil {
+            log.Fatalf("Error stemming %v, error: %v", word, err.Error())
+            return nil
+        }
+        r[i] = stemWord
+    }
+    return r
 }

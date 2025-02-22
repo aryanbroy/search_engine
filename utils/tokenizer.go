@@ -5,15 +5,16 @@ import (
 	"unicode"
 )
 
-func tokenize(text string) []string {
+func Tokenize(text string) []string {
 	return strings.FieldsFunc(text, func(r rune) bool {
 		return !unicode.IsLetter(r) && !unicode.IsNumber(r)
 	})
 }
 
-func analyze(text string) []string {
-	tokens := tokenize(text)
+func Analyze(text string) []string {
+	tokens := Tokenize(text)
 	tokens = lowercaseFilter(tokens)
 	tokens = stopWordsFilter(tokens)
+    tokens = stemFilter(tokens)
 	return tokens
 }

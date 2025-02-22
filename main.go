@@ -21,4 +21,8 @@ func main() {
 	}
 
 	fmt.Printf("Time to load %v documents: %v\n", len(docs), time.Since(startTime))
+
+    idx := make(utils.Index)
+    idx.Add(docs)
+        
 }
