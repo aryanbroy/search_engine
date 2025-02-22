@@ -11,10 +11,11 @@ import (
 
 func main() {
 	dumpPath := flag.String("p", "enwiki-latest-abstract1.xml.gz", "path to file")
-	// query := flag.String("q", "Small wild cat", "search query")
+	query := flag.String("q", "Small wild cat", "search query")
 	flag.Parse()
 
 	startTime := time.Now()
+    fmt.Println("Loading documents...")
 	docs, err := utils.LoadDocuments(*dumpPath)
 	if err != nil {
 		log.Fatalf("Error loading documents: %v", err.Error())
@@ -22,7 +23,15 @@ func main() {
 
 	fmt.Printf("Time to load %v documents: %v\n", len(docs), time.Since(startTime))
 
+    startTime = time.Now()
+    fmt.Println("Indexing documents...")
     idx := make(utils.Index)
     idx.Add(docs)
-        
+    fmt.Printf("Indexed %v docs in %v\n", len(docs), time.Since(startTime)) 
+
+    startTime = time.Now()
+    fmt.Println("Searching...")
+    matchedIds := idx.Search(*query)
+    fmt.Println(matchedIds)
+    fmt.Printf("Took %v to search about: %v\n", time.Since(startTime), *query)
 }

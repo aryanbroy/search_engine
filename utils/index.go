@@ -21,7 +21,7 @@ func Intersection(a []int, b []int) []int{
     var i, j int
     maxLen := int(math.Max(float64(len(a)), float64(len(b))))
     
-    r := make([]int, maxLen)
+    r := make([]int, 0, maxLen)
 
     for i < len(a) && j < len(b) {
         if a[i] < b[j] {
@@ -32,6 +32,23 @@ func Intersection(a []int, b []int) []int{
             r = append(r, a[i])
             i++
             j++
+        }
+    }
+    return r
+}
+
+func (idx Index) Search(text string) []int{
+    var r []int
+
+    for _, token := range Analyze(text) {
+        if ids, ok := idx[token]; ok {
+            if r == nil {
+                r = ids
+            } else {
+                r = Intersection(r, ids)
+            }
+        } else {
+            return nil
         }
     }
     return r
