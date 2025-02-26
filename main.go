@@ -32,6 +32,5 @@ func main() {
     startTime = time.Now()
     fmt.Println("Searching...")
     matchedIds := idx.Search(*query)
-    fmt.Println(matchedIds)
-    fmt.Printf("Took %v to search about: %v\n", time.Since(startTime), *query)
+	fmt.Printf("Found %v document(s) that contains the query: %v, time took: %v\n", len(matchedIds), *query, time.Since(startTime))
 }
