@@ -22,7 +22,7 @@ func fileExists(fileName string) bool {
 }
 
 func LoadDocuments(path string) ([]document, error) {
-	cachePath := "example.bob"
+	cachePath := "example.gob"
 
 	if fileExists(cachePath) {
 		docs := struct{
