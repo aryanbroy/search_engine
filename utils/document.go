@@ -21,10 +21,11 @@ func fileExists(fileName string) bool {
 	return !errors.Is(err, os.ErrNotExist)
 }
 
-func LoadDocuments(path string) ([]document, error) {
+func LoadDocuments(path string, isIndexed *bool) ([]document, error) {
 	cachePath := "example.gob"
 
 	if fileExists(cachePath) {
+		*isIndexed = true	
 		docs := struct{
 			Document []document `xml:"doc"`
 		}{}
