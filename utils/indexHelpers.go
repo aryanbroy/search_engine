@@ -2,14 +2,14 @@ package utils
 
 import (
 	"encoding/gob"
-	"fmt"
 	"log"
 	"os"
 )
 
-func SaveIndex(docs []document, fileName string) {
+func SaveIndex(filename string, idx Index) {
 	log.Println("Saving indexes...")
-	file, err := os.Create(fileName)
+
+	file, err := os.Create(filename)
 	if err != nil {
 		log.Fatalln("Error creating file: ", err.Error())
 		return
@@ -18,33 +18,30 @@ func SaveIndex(docs []document, fileName string) {
 	defer file.Close()
 
 	enc := gob.NewEncoder(file)
-	if err := enc.Encode(docs); err != nil {
-		log.Fatalln("Error encoding docs: ", err.Error())
+	if err := enc.Encode(idx); err != nil {
+		log.Fatalln("Error encoding file: ", err.Error())
+		return
+	}
+	log.Println("Indexes saved successfully!")
+}
+
+func LoadIndex(filename string, idx *Index) {
+	log.Println("Loading indexes...")
+
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatalln("Error opening file: ", err.Error())
 		return
 	}
 
-	log.Println("Indexes saved to a file")
-}
-
-func LoadIndex(fileName string, docs *[]document) error {
-	log.Println("Opening file...")
-
-	file, err := os.Open(fileName)
-	if err != nil {
-		log.Fatalln("Error opening file: ", err.Error())
-		return fmt.Errorf("Error opening file: %v", err.Error())
-	}
-
-	log.Println("Finished opening the file")
-
 	defer file.Close()
 
-	log.Println("Decoding file...")
 	decoder := gob.NewDecoder(file)
-	if err := decoder.Decode(&docs); err != nil {
+	if err := decoder.Decode(&idx); err != nil {
 		log.Fatalln("Error decoding file: ", err.Error())
-		return fmt.Errorf("Error decoding file: %v", err.Error())
+		return
 	}
-	log.Println("Successfully decoded the file")
-	return nil
+
+	log.Println("Loaded indexes from an existing file")
+
 }
