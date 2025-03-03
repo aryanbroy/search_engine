@@ -3,9 +3,10 @@ package utils
 import (
 	"compress/gzip"
 	"encoding/xml"
-	"errors"
 	"log"
 	"os"
+
+	"github.com/aryanbroy/search_engine/checkers"
 )
 
 type document struct {
@@ -15,28 +16,22 @@ type document struct {
 	ID    int
 }
 
-func fileExists(fileName string) bool {
-	_, err := os.Stat(fileName)
-	
-	return !errors.Is(err, os.ErrNotExist)
-}
-
 func LoadDocuments(path string, isIndexed *bool) ([]document, error) {
 	cachePath := "example.gob"
 
-	if fileExists(cachePath) {
-		*isIndexed = true	
-		docs := struct{
+	if checkers.FileExists(cachePath) {
+		*isIndexed = true
+		docs := struct {
 			Document []document `xml:"doc"`
 		}{}
 		log.Println("Loading indexes from cache...")
-		err := LoadIndex(cachePath, &docs.Document)
+		err := LoadDocs(cachePath, &docs.Document)
 		if err != nil {
 			log.Fatalf("Error loading indexes: %v", err.Error())
 			return nil, err
 		}
 		log.Println("Successfully loaded docs from cache!")
-		return docs.Document, nil	
+		return docs.Document, nil
 	}
 	log.Println("Loading documents for the first time")
 	log.Println("Opeing file...", path)
@@ -78,6 +73,6 @@ func LoadDocuments(path string, isIndexed *bool) ([]document, error) {
 	}
 
 	log.Println("No cache file found, caching now!!")
-	SaveIndex(docs, cachePath)
+	SaveDocs(docs, cachePath)
 	return docs, nil
 }

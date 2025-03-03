@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/aryanbroy/search_engine/handlers"
+	"github.com/aryanbroy/search_engine/checkers"
 	"github.com/aryanbroy/search_engine/utils"
 )
 
@@ -26,25 +26,33 @@ func main() {
 		log.Fatalf("Error loading documents: %v", err.Error())
 	}
 
-	fmt.Printf("Time to load %v documents: %v\n", len(docs), time.Since(startTime))
+	log.Printf("Time to load %v documents: %v\n", len(docs), time.Since(startTime))
 
 	idx := make(utils.Index)
 	startTime = time.Now()
 
-	fmt.Println("Indexing documents...")
+	log.Println("Indexing documents...")
 
-	idx.Add(docs)
+	indexFile := "index.gob"
+	if !checkers.FileExists(indexFile) {
+		log.Println("Indexing for the first time...")
+		idx.Add(docs)
+		utils.SaveIndex(indexFile, idx)
+	} else {
+		log.Println("Index file already exists")
+		utils.LoadIndex(indexFile, &idx)
+	}
 
-	fmt.Printf("Indexed %v docs in %v\n", len(docs), time.Since(startTime))
+	log.Printf("Indexed %v docs in %v\n", len(docs), time.Since(startTime))
 
-	router.HandleFunc("/search", handlers.HandleSearch)
+	router.HandleFunc("/search", idx.HandleSearch)
 
 	srv := http.Server{
 		Addr:    ":8080",
 		Handler: router,
 	}
 
-	log.Println("Starting the server...")
+	log.Println("Server started at port: ", srv.Addr)
 
 	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalln("Failed to start server")
